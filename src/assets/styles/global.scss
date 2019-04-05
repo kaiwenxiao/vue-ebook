@@ -1,0 +1,9 @@
+@import "reset";
+
+$ratio:375/10;
+@function px2rem($px) {
+  @return $px/$ratio+rem;
+  // 上面return的结果相当于(传入的$px/$ratio)*(1rem)的px大小
+  // $ratio 这个在计算时是固定的，以37.5为标准，当然用户也可以修改标准
+  // 1rem根据浏览器的html.fontSize
+}
