@@ -1,0 +1,35 @@
+$ratio: 375/10;
+@function px2rem($px) {
+  @return $px/$ratio+rem;
+  // 上面return的结果相当于(传入的$px/$ratio)*(1rem)的px大小
+  // $ratio 这个在计算时是固定的，以37.5为标准，当然用户也可以修改标准
+  // 1rem根据浏览器的html.fontSize
+}
+
+@mixin center {
+  // 规定了底下的子元素或字体等水平和垂直居中
+  display: flex;
+  //水平
+  justify-content: center;
+  //垂直
+  align-items: center;
+}
+
+@mixin left {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+@mixin right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+@mixin ellipsis { // 文本超出用...
+  text-overflow: ellipsis;
+  overflow: hidden;
+  // 不换行
+  white-space: nowrap;
+}
