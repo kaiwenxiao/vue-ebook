@@ -38,21 +38,22 @@
 
 <script>
   import {ebookMinxin} from "../../utils/mixin";
-  import {getReadTime} from "../../utils/localStorage";
+
 
   export default {
     name: "EbookSettingProgress",
     mixins: [ebookMinxin],
     computed: {
       getSectionName() {
-        if (this.section) {
-          const sectionInfo = this.currentBook.section(this.section)
-          if (sectionInfo && sectionInfo.href) {
-            // navigation 获取目录
-            return this.currentBook.navigation.get(sectionInfo.href).label
-          }
-        }
-        return ''
+        // if (this.section) {
+        //   const sectionInfo = this.currentBook.section(this.section)
+        //   if (sectionInfo && sectionInfo.href && this.currentBook && this.currentBook.navigation) {
+        //     // navigation 获取目录  ！！！只能获得一级目录！！！
+        //     return this.currentBook.navigation.get(sectionInfo.href).label
+        //   }
+        // }
+        // 通过解析的多级目录来获取章节名
+        return this.section?this.navigation[this.section].label:''
       }
     },
     methods: {
@@ -110,17 +111,6 @@
           this.setSection(this.section + 1).then(() => {
             this.displaySection()
           })
-        }
-      },
-      getReadTimeText() {
-        return this.$t('book.haveRead').replace('$1', this.getReadTimeByMinute())
-      },
-      getReadTimeByMinute() {
-        const readTime = getReadTime(this.fileName)
-        if (!readTime) {
-          return 0
-        } else {
-          return Math.ceil(readTime / 60)
         }
       }
     },

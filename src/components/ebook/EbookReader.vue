@@ -7,6 +7,7 @@
 <script>
   import {ebookMinxin} from "../../utils/mixin"
   import Epub from 'epubjs'
+  import {flatten} from "../../utils/book";
   import {
     getFontFamily, saveFontFamily,
     getFontSize, saveFontSize, getTheme, saveTheme,
@@ -45,15 +46,6 @@
         }
         // this.$store.dispatch('setMenuVisible', !this.menuVisible)
         this.setMenuVisible(!this.menuVisible)
-      },
-      // 隐藏标题和菜单栏
-      hideTitleAndMenu() {
-        // this.$store.dispatch('setMenuVisible', false)
-        this.setMenuVisible(false)
-        // 隐藏设置菜单（字号大小、进度、主题等）
-        this.setSettingVisible(-1)
-        // 隐藏字体设置菜单
-        this.setFontFamilyVisible(false)
       },
       initFontSize() {
         // 获得当前电子书的字体大小 (localStorage是没有默认值的)
@@ -104,6 +96,7 @@
           method: 'default'
         })
         const location = getLocation(this.fileName)
+        // mixin 先显示当前页面再加载主题、字号大小等
         this.display(location, () => {
           this.initTheme()
           this.initFontFamily()
@@ -147,16 +140,44 @@
           event.stopPropagation()
         })
       },
+      parseBook() {
+        // 获得电子书封面（图片）
+        this.book.loaded.cover.then(cover => {
+          // 将封面转换成url
+          this.book.archive.createUrl(cover).then(url => {
+            // 将url存入vuex中
+            this.setCover(url)
+          })
+        })
+        this.book.loaded.metadata.then(metadata => {
+          // 电子书信息（作者、书名等）
+          this.setMetadata(metadata)
+        })
+        // 获取书本目录
+        this.book.loaded.navigation.then(nav => {
+          const navItem = flatten(nav.toc)
+
+          function find(item, level = 0) {
+            return !item.parent ? level : find(navItem.filter(parentItem => parentItem.id === item.parent)[0], ++level)
+          }
+
+          navItem.forEach(item => {
+            // 为item添加属性level
+            item.level = find(item)
+          })
+          this.setNavigation(navItem)
+        })
+      },
       initEpub() {
         // nginx下的资源路径
         const url = process.env.VUE_APP_RES_URL + '/epub/' + this.fileName + '.epub'
         // this.book 没定义的话代表全局变量（ES5）
         this.book = new Epub(url)
-
         // 当前图书
         this.setCurrentBook(this.book)
         this.initRendition()
         this.initGresture()
+        this.parseBook()
         // this.book.ready钩子函数，调用异步方法
         this.book.ready.then(() => {
           // 电子书分页
@@ -167,7 +188,6 @@
           // 刷新后，设置进度条
           this.refreshLocation()
         })
-
       }
     },
     mounted() {

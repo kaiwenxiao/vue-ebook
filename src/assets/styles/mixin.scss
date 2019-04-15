@@ -27,9 +27,21 @@ $ratio: 375/10;
   align-items: center;
 }
 
+//父级元素一定要指定宽度（在这个宽度进行省略），否则会撑开一行
 @mixin ellipsis { // 文本超出用...
   text-overflow: ellipsis;
   overflow: hidden;
   // 不换行
   white-space: nowrap;
+}
+
+//指定多行后省略 上面的是单行
+@mixin ellipsis2($line) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: keep-all;
 }

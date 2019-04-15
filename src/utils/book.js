@@ -1,3 +1,5 @@
+import {getReadTime} from "./localStorage";
+
 // 全局公用静态变量和方法
 export const FONT_SIZE_LIST = [
   {fontSize: 12},
@@ -84,9 +86,23 @@ export function removeCss(href) {
 }
 
 // 将重复使用的css link删除
-export function removeAllCss(){
+export function removeAllCss() {
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_default.css`)
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_eye.css`)
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_gold.css`)
   removeCss(`${process.env.VUE_APP_RES_URL}/theme/theme_night.css`)
+}
+
+export function getReadTimeByMinute(fileName) {
+  const readTime = getReadTime(fileName)
+  if (!readTime) {
+    return 0
+  } else {
+    return Math.ceil(readTime / 60)
+  }
+}
+
+// ...扩展运算符可以拆开数组，成为独立的两个Number、String等，同时可以添加其他元素进来
+export function flatten(array) {
+  return [].concat(...array.map(item => [].concat(item, ...flatten(item.subitems))))
 }

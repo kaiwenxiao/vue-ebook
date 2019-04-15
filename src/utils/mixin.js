@@ -1,6 +1,6 @@
 // mixin做到简化代码的作用 在其他需要引入的地方调用mixin则可以使用了 超过两处调用就可以用mixin
 import {mapGetters, mapActions} from "vuex"
-import {themeList, addCss, removeAllCss} from "./book";
+import {themeList, addCss, removeAllCss,getReadTimeByMinute} from "./book";
 import {saveLocation} from "./localStorage";
 
 export const ebookMinxin = {
@@ -80,15 +80,18 @@ export const ebookMinxin = {
     refreshLocation() {
       // 现在的位置 返回一个对象
       const currentLocation = this.currentBook.rendition.currentLocation()
-      const startCfi = currentLocation.start.cfi
-      // 本章节开始位置的百分比
-      const progress = this.currentBook.locations.percentageFromCfi(startCfi)
-      // vuex 刷新后不会保存，只能在book.ready 在重新调用此函数，加载进度
-      this.setProgress(Math.floor(progress * 100))
-      // vuex 设置当前位置的章节名称
-      this.setSection(currentLocation.start.index)
-      saveLocation(this.fileName, startCfi)
+      if(currentLocation&&currentLocation.start){
+        const startCfi = currentLocation.start.cfi
+        // 本章节开始位置的百分比
+        const progress = this.currentBook.locations.percentageFromCfi(startCfi)
+        // vuex 刷新后不会保存，只能在book.ready 在重新调用此函数refreshLocation，加载进度
+        this.setProgress(Math.floor(progress * 100))
+        // vuex 设置当前位置的章节名称
+        this.setSection(currentLocation.start.index)
+        saveLocation(this.fileName, startCfi)
+      }
     },
+    // 自定义display 先显示图书位置，再刷新进度条，若有其他任务则进行callback
     display(target,cb) {
       if (target) {
         this.currentBook.rendition.display(target).then(() => {
@@ -101,6 +104,19 @@ export const ebookMinxin = {
           if (cb) cb()
         })
       }
+    },
+    // 隐藏标题和菜单栏
+    hideTitleAndMenu() {
+      // this.$store.dispatch('setMenuVisible', false)
+      this.setMenuVisible(false)
+      // 隐藏设置菜单（字号大小、进度、主题等）
+      this.setSettingVisible(-1)
+      // 隐藏字体设置菜单
+      this.setFontFamilyVisible(false)
+    },
+    // 已读时间
+    getReadTimeText() {
+      return this.$t('book.haveRead').replace('$1', getReadTimeByMinute(this.fileName))
     }
   }
 }

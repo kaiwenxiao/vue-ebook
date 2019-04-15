@@ -21,6 +21,7 @@
     <ebook-setting-font-popup></ebook-setting-font-popup>
     <ebook-setting-theme></ebook-setting-theme>
     <ebook-setting-progress></ebook-setting-progress>
+    <ebook-setting-slide></ebook-setting-slide>
   </div>
 </template>
 
@@ -29,6 +30,7 @@
   import EbookSettingFontPopup from './EbookSettingFontPopup'
   import EbookSettingTheme from './EbookSettingTheme'
   import EbookSettingProgress from './EbookSettingProgress'
+  import EbookSettingSlide from './EbookSlide'
   import {ebookMinxin} from "../../utils/mixin"
 
   export default {
@@ -37,7 +39,8 @@
       EbookSettingTheme,
       EbookSettingFont,
       EbookSettingFontPopup,
-      EbookSettingProgress
+      EbookSettingProgress,
+      EbookSettingSlide
     },
     methods: {
       // 点击菜单栏下的（字号大小、进度、主题等）
