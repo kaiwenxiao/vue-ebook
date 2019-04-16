@@ -9,6 +9,7 @@
         </div>
         <input type="text" class="slide-contents-search-input"
                :placeholder="$t('book.searchHint')"
+               v-model="searchText"
                @click="showSearchPage">
       </div>
       <!--取消按钮-->
@@ -17,7 +18,7 @@
       </div>
     </div>
     <!--图书信息-->
-    <div class="slide-contents-book-wrapper">
+    <div class="slide-contents-book-wrapper" v-show="!searchVisible">
       <!--左-->
       <div class="slide-contents-book-img-wrapper">
         <img :src="cover" alt="" class="slide-contents-book-img">
@@ -40,7 +41,7 @@
     <scroll class="slide-contents-list"
             :top="156"
             :bottom="48"
-            ref="scroll">
+            v-show="!searchVisible">
       <div class="slide-contents-item" v-for="(item,index) in navigation"
            :key="index">
         <!--目录的标签信息-->
@@ -49,6 +50,13 @@
         <!--目录的页数信息-->
         <span class="slide-contents-item-page"></span>
       </div>
+    </scroll>
+    <!--搜索结果列表-->
+    <scroll class="slide-search-list"
+            :top="66"
+            :bottom="48"
+            v-show="searchVisible">
+      <!--<div class="slide-search-item" v-for="(item,index) in searchList" :key="index">{{item.excerpt}}</div>-->
     </scroll>
   </div>
 </template>
@@ -63,10 +71,20 @@
     components: {Scroll},
     data() {
       return {
-        searchVisible: false
+        searchVisible: false,
+        searchList: null,
+        searchText: ''
       }
     },
     methods: {
+      // doSearch(q) {
+      //   return Promise.all(
+      //     this.currentBook.spine.spineItems.map(
+      //       item => item.load(this.currentBook.load.bind(this.currentBook))
+      //         .then(item.find.bind(item, q))
+      //         .finally(item.unload.bind(item)))
+      //   ).then(results => Promise.resolve([].concat.apply([], results)))
+      // },
       // 防止进度功能等用户点击章节后消失的不良体验
       displayNavigation(target) {
         this.display(target, () => {
@@ -81,12 +99,18 @@
       },
       hideSearchPage() {
         this.searchVisible = false
+        this.searchText = ''
+        this.searchList = null
       },
       showSearchPage() {
         this.searchVisible = true
       }
     },
-    name: "EbookSlideContent"
+    name: "EbookSlideContent",
+    mounted() {
+      console.log(this.currentBook)
+      console.log('asd')
+    }
   }
 </script>
 
